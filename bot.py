@@ -1,3 +1,4 @@
+import os
 import requests
 import json
 import nltk
@@ -6,10 +7,14 @@ from collections import deque
 import asyncio
 import time
 
-# Remember to use your own values from my.telegram.org!
-api_id = 1025907
-api_hash = '452b0359b988148995f22ff0f4229750'
-proxy_port = 1081
+# Telegram API credentials — get from https://my.telegram.org
+# Set TELEGRAM_API_ID and TELEGRAM_API_HASH in environment.
+api_id_env = os.environ.get('TELEGRAM_API_ID')
+api_hash = os.environ.get('TELEGRAM_API_HASH')
+if not api_id_env or not api_hash:
+    raise SystemExit('TELEGRAM_API_ID and TELEGRAM_API_HASH env vars are required. See env.example')
+api_id = int(api_id_env)
+proxy_port = int(os.environ.get('PROXY_PORT', '1081'))
 client = TelegramClient('anon', api_id, api_hash,
                         proxy=("socks5", '127.0.0.1', proxy_port))
 
@@ -18,8 +23,11 @@ print("downloading nltk data")
 nltk.download('vader_lexicon')
 print("downloading nltk data done")
 
-# 设置OpenAI API密钥（**请确保妥善管理您的API密钥**）
-OPENAI_API_KEY = "sk-9JABKD0bYBgwUV9EJgoHl7GTmPViqpDun338BKJD0d7GWP1w"  # 替换为您的实际API密钥
+# 设置 API 密钥（red-pill.ai / OpenAI 兼容代理）
+# 必须通过环境变量 OPENAI_API_KEY 提供，不要硬编码到源码
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+if not OPENAI_API_KEY:
+    raise SystemExit('OPENAI_API_KEY env var is required. See env.example')
 
 # 定义一个函数，用于向 AI 发送消息并处理响应
 
